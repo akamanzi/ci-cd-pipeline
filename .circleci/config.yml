@@ -91,6 +91,42 @@ jobs:
             npm i
             npm audit fix --audit-level=critical --force
 
+  deploy-infrastructure:
+    docker:
+      # Docker image here that supports AWS CLI
+    steps:
+      # Checkout code from git
+      - run:
+          name: Ensure back-end infrastructure exists
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/backend.yml \
+              --tags project=udapeople-backend \
+              --stack-name "udapeople-backend-cc65eiixi3" \
+              --parameter-overrides ID="cc65eiixi3"  
+              # exit 1
+      - run:
+          name: Ensure front-end infrastructure exist
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/frontend.yml \
+              --tags project=udapeople-frontend \
+              --stack-name "udapeople-frontent-cc65eiixi3" \
+              --parameter-overrides ID="cc65eiixi3"  
+              # exit 1
+      - run:
+          name: Add back-end ip to ansible inventory
+          command: |
+            aws ec2 describe-instances \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            --filters "Name=tag:project,Values=udapeope-backend" \
+            --output text >> .circleci/ansible/inventory.txt
+            # exit 1
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/.circleci/ansible/inventory.txt
+      # Here's where you will add some code to rollback on failure      
 workflows:
   default:
     jobs:
@@ -104,3 +140,8 @@ workflows:
           requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [test-feature-branch]
