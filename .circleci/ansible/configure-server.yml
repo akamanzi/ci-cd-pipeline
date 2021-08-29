@@ -4,6 +4,16 @@
   hosts: web
   user: ubuntu
   gather_facts: false
+  environment:
+    ENVIRONMENT: production
+    TYPEORM_CONNECTION: postgres
+    TYPEORM_ENTITIES: ./src/modules/domain/**/*.entity.ts
+    TYPEORM_HOST: udapeople.c4panu7nz38c.us-east-1.rds.amazonaws.com
+    TYPEORM_PORT: 5432
+    TYPEORM_USERNAME: postgres
+    TYPEORM_USERNAME: udapeople123!
+    TYPEORM_DATABASE: udapeople
+  
   vars:
     - ansible_python_interpreter: /usr/bin/python3
     - ansible_host_key_checking: false
@@ -17,4 +27,4 @@
       # Your code here
 
   roles:
-    # Your code here
+    - configure-server

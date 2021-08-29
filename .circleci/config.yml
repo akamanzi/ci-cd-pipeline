@@ -125,8 +125,32 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - project/.circleci/ansible/inventory.txt
+            - ci-cd-pipeline/.circleci/ansible/inventory.txt
+      # Here's where you will add some code to rollback on failure   
+
+  configure-infrastructure:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "e9:4a:60:92:1c:5a:57:2e:3d:5d:b6:8e:f2:61:7d:b6"
+
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible
+            # exit 1
+      - run:
+          name: Configure server
+          command: |
+            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
+            
       # Here's where you will add some code to rollback on failure      
+
 workflows:
   default:
     jobs:
@@ -145,3 +169,5 @@ workflows:
           filters:
             branches:
               only: [test-feature-branch]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
