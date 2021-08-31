@@ -121,6 +121,7 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:project,Values=udapeople-backend" \
             --output text >> .circleci/ansible/inventory.txt
+            yum -y install tar # install tar
             # exit 1
       - persist_to_workspace:
           root: ci-cd-pipeline
