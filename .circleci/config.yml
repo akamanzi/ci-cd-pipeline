@@ -164,6 +164,7 @@ jobs:
       - checkout # Checkout code from git
       - run:
           name: Run migrations
+          no_output_timeout: 10m
           command: |
             cd backend 
             npm i
