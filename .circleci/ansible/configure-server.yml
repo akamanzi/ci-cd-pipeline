@@ -11,7 +11,7 @@
     TYPEORM_HOST: udapeople.c4panu7nz38c.us-east-1.rds.amazonaws.com
     TYPEORM_PORT: 5432
     TYPEORM_USERNAME: postgres
-    TYPEORM_USERNAME: udapeople123!
+    TYPEORM_PASSWORD: udapeople123!
     TYPEORM_DATABASE: udapeople
   
   vars:
@@ -19,12 +19,12 @@
     - ansible_host_key_checking: false
     - ansible_stdout_callback: yaml
 
-  pre_tasks:
-    - name: "wait 600 seconds for target connection to become reachable/usable."
-      # Your code here
+  # pre_tasks:
+  #   - name: "wait 600 seconds for target connection to become reachable/usable."
+  #     # Your code here
 
-    - name: "install python for Ansible."
-      # Your code here
+  #   - name: "install python for Ansible."
+  #     apk add --update ansible
 
   roles:
     - configure-server
