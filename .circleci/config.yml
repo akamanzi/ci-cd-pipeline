@@ -123,7 +123,7 @@ jobs:
             --output text >> .circleci/ansible/inventory.txt
             # copy ip to memstash
             BACKENDURL=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:project,Values=udapeople-backend" --output text)
-            curl -H "Content-Type: text/plain" -H "token: 1bfc2326-0985-4863-a650-48e3dcdff48e" --request PUT --data "$BACKENDURL" --output text)" https://api.memstash.io/values/backendurl
+            curl -H "Content-Type: text/plain" -H "token: 1bfc2326-0985-4863-a650-48e3dcdff48e" --request PUT --data "$BACKENDURL" https://api.memstash.io/values/backendurl
             # install utilities
             yum -y install tar # install tar utility
             yum -y install gzip # install gzip utility
