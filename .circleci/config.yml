@@ -126,9 +126,9 @@ jobs:
             yum -y install gzip # install gzip utility
             # exit 1
       - persist_to_workspace:
-          root: ci-cd-pipeline
+          root: ~/
           paths:
-            - .circleci/ansible/inventory.txt
+            - ci-cd-pipeline/.circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure   
 
   configure-infrastructure:
