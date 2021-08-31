@@ -124,6 +124,7 @@ jobs:
 
             yum -y install tar # install tar utility
             yum -y install gzip # install gzip utility
+            pwd
             # exit 1
       - persist_to_workspace:
           root: ~/
