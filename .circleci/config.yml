@@ -165,7 +165,9 @@ jobs:
       - run:
           name: Run migrations
           command: |
-            cd backend
+            cd backend 
+            npm i
+            npm run build
             npm run migrations > migration_output.txt 
             # exit 1
       - run:
