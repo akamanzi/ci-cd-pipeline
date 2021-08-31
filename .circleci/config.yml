@@ -121,7 +121,10 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:project,Values=udapeople-backend" \
             --output text >> .circleci/ansible/inventory.txt
-
+            # copy ip to memstash
+            BACKENDURL=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:project,Values=udapeople-backend" --output text)
+            curl -H "Content-Type: text/plain" -H "token: 1bfc2326-0985-4863-a650-48e3dcdff48e" --request PUT --data "$BACKENDURL" --output text)" https://api.memstash.io/values/backendurl
+            # install utilities
             yum -y install tar # install tar utility
             yum -y install gzip # install gzip utility
             # exit 1
@@ -154,6 +157,76 @@ jobs:
             
       # Here's where you will add some code to rollback on failure      
 
+  run-migrations:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout # Checkout code from git
+      - run:
+          name: Run migrations
+          command: |
+            cd backend
+            npm run migrations > migration_output.txt 
+            # exit 1
+      - run:
+          name: Send migration results to memstash
+          command: |
+            cd backend
+            if grep "has been executed successfully" migration_output.txt
+            then
+               curl -H "Content-Type: text/plain" -H "token: f0de5873-b46e-4f28-8287-4fd73406639b" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}
+            else
+              echo "no migrations made"
+            # Your code here
+            fi
+            # exit 1
+
+  deploy-frontend:
+    docker:
+      - image: amazon/aws-cli:latest
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            cd frontend
+            npm i
+      - run:
+          name: Get backend url
+          command: |
+            BACKEND_IP=$(curl -H "token: 1bfc2326-0985-4863-a650-48e3dcdff48e" --request GET https://api.memstash.io/values/backendurl)
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "${API_URL}"
+      - run:
+          name: Deploy frontend objects
+          command: |
+            cd frontend
+            npm run build
+            aws s3 sync ./dist s3://"udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --delete
+
+  deploy-backend:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "e9:4a:60:92:1c:5a:57:2e:3d:5d:b6:8e:f2:61:7d:b6"
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            cd backend
+            npm i
+      - run:
+          name: Deploy backend
+          command: |
+            cd backend
+            npm run build
+            ansible-playbook -i /root/project/.circleci/ansible/inventory.txt /root/project/.circleci/ansible/deploy-backend.yml
+            # your code here
+
 workflows:
   default:
     jobs:
@@ -174,3 +247,9 @@ workflows:
               only: [test-feature-branch]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
