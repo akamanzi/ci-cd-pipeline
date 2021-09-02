@@ -212,8 +212,10 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            cd frontend
-            npm i
+            apk add --update ansible
+            apk add --update tar gzip curl nodejs npm
+            pip install awscli
+            
       - run:
           name: Get backend url
           command: |
@@ -224,6 +226,7 @@ jobs:
           name: Deploy frontend objects
           command: |
             cd frontend
+            npm i
             npm run build
             aws s3 sync ./dist s3://"udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --delete
 
@@ -240,12 +243,15 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            cd backend
-            npm i
+            apk add --update ansible
+            apk add --update tar gzip curl nodejs npm
+            pip install awscli
+            
       - run:
           name: Deploy backend
           command: |
             cd backend
+            npm i
             npm run build
             ansible-playbook -i /root/project/.circleci/ansible/inventory.txt /root/project/.circleci/ansible/deploy-backend.yml
             # your code here
