@@ -170,7 +170,6 @@ jobs:
             npm i
             npm run build
             npm run migrations > migration_output.txt 
-            # exit 1
       - run:
           name: Send migration results to memstash
           command: |
