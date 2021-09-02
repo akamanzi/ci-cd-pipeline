@@ -164,6 +164,11 @@ jobs:
     steps:
       - checkout # Checkout code from git
       - run:
+          name: install awscli
+          command: |
+            sudo apt-get update
+            sudo apt-get -y install awscli
+      - run:
           name: create .env files
           command: |
             echo NODE_ENV=production > "backend/.env"
