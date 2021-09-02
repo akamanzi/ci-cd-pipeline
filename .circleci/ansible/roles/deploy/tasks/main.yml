@@ -29,17 +29,17 @@
     production: yes
     state: present
 
-- name: Creates directory
-  file:
-    path: ~/project
-    state: directory
-
 - name: Copy backend code
   template:
-    src: "~/project/backend"
-    dest: "~/project"
+    src: "/root/project/backend.tar.gz"
+    dest: "~/"
+
+- name: "unzip backend files"
+  become: true
+  shell: |
+    tar -xvf backend.tar.gz -C ~/
 
 - name: Executing node
   shell: |
-    cd ~/project/backend
+    cd ~/backend
     pm2 start --name backend npm -- start

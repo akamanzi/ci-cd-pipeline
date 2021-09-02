@@ -206,15 +206,13 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: amazon/aws-cli:latest
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible
-            apk add --update tar gzip curl nodejs npm
-            pip install awscli
+            sudo apt-get update && sudo apt-get install -yy awscli
             
       - run:
           name: Get backend url
@@ -248,11 +246,16 @@ jobs:
             pip install awscli
             
       - run:
-          name: Deploy backend
+          name: build the backend
           command: |
             cd backend
             npm i
             npm run build
+        
+      - run:
+          name: deploy the backend
+          command: |
+            tar cvzf backend.tar.gz backend
             ansible-playbook -i /root/project/.circleci/ansible/inventory.txt /root/project/.circleci/ansible/deploy-backend.yml
             # your code here
 
