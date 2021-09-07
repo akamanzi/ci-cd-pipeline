@@ -255,8 +255,9 @@ jobs:
       - run:
           name: deploy the backend
           command: |
+            cat .circleci/ansible/inventory.txt
             tar cvzf backend.tar.gz backend
-            ansible-playbook -i /root/project/.circleci/ansible/inventory.txt /root/project/.circleci/ansible/deploy-backend.yml
+            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
             # your code here
 
 workflows:

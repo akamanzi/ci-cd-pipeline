@@ -29,17 +29,15 @@
     production: yes
     state: present
 
-- name: Copy backend code
-  template:
-    src: "/root/project/backend.tar.gz"
-    dest: "~/"
-
-- name: "unzip backend files"
-  become: true
-  shell: |
-    tar -xvf backend.tar.gz -C ~/
+- name: "Copy backend files"
+  become: yes
+  unarchive:
+    src:  /root/project/backend.tar.gz
+    dest: ~/
+    owner: ubuntu
 
 - name: Executing node
   shell: |
     cd ~/backend
     pm2 start --name backend npm -- start
+    pm2 ls
