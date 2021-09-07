@@ -308,15 +308,12 @@ jobs:
           command: |
             apk add --update tar gzip curl nodejs npm
             pip install awscli
-      - run:
-          name: Get backend url
-          command: |
-            BACKEND_IP=$(curl -H "token: 1bfc2326-0985-4863-a650-48e3dcdff48e" --request GET https://api.memstash.io/values/backendurl)
-            BACKEND_URL="https://${BACKEND_IP}:3030/api/status"
+            
       - run:
           name: Backend smoke test.
           command: |
-            curl $BACKEND_URL
+            BACKEND_IP=$(curl -H "token: 1bfc2326-0985-4863-a650-48e3dcdff48e" --request GET https://api.memstash.io/values/backendurl)
+            curl -s "https://${BACKEND_IP}:3030/api/status"
       - run:
           name: Frontend smoke test.
           command: |
