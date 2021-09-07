@@ -29,10 +29,6 @@
     production: yes
     state: present
 
-- name: "install tar"
-  shell: |
-    apt-get install tar
-
 - name: "Copy backend files"
   become: yes
   unarchive:
