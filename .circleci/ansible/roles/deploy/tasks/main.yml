@@ -29,6 +29,11 @@
     production: yes
     state: present
 
+- name: create project directory 
+  file:
+    path: /home/ubuntu/project
+    state: directory
+
 - name: "Copy backend files"
   become: yes
   unarchive:
