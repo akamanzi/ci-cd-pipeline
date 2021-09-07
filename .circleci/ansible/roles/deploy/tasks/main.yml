@@ -29,15 +29,21 @@
     production: yes
     state: present
 
+- name: "install tar"
+  shell: |
+    apt-get install tar
+
 - name: "Copy backend files"
   become: yes
   unarchive:
     src:  /root/project/backend.tar.gz
-    dest: ~/
+    dest: /home/ubuntu/project
     owner: ubuntu
 
 - name: Executing node
   shell: |
-    cd ~/backend
+    cd /home/ubuntu/project/backend
+    npm i
+    npm run build
     pm2 start --name backend npm -- start
     pm2 ls
