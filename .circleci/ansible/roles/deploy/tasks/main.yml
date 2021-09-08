@@ -57,4 +57,5 @@
     npm i
     npm run build
     pm2 start --name backend npm -- start
+    npm run start:prod
     pm2 ls
