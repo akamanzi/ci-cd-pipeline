@@ -323,7 +323,7 @@ jobs:
           name: Backend smoke test.
           command: |
             BACKEND_IP=$(curl -H "token: 1bfc2326-0985-4863-a650-48e3dcdff48e" --request GET https://api.memstash.io/values/backendurl)
-            curl -s "https://${BACKEND_IP}:3030/api/status"
+            curl "http://${BACKEND_IP}:3030/api/status"
       - run:
           name: Frontend smoke test.
           command: |
@@ -336,7 +336,29 @@ jobs:
             fi
       - destroy-environment      
       - revert-migrations
+
+  cloudfront-update:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            yum -y install tar gzip
+      - run:
+          name: Update cloudfront distribution
+          command: |
+            export OLDWORKFLOWID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --region us-east-1 --no-paginate --output text)
+            aws cloudformation deploy \
+            --template-file .circleci/files/cloudfront.yml \
+            --stack-name production-distro \
+            --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
+            --tags project=udapeople
+      - destroy-environment
+      - revert-migrations
       
+
 
 workflows:
   default:
