@@ -135,7 +135,7 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              --tags project=udapeople-backend \
+              --tags project=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
               # exit 1
@@ -326,7 +326,7 @@ jobs:
           command: |
             BACKEND_IP=$(aws ec2 describe-instances \
                       --query 'Reservations[*].Instances[*].PublicIpAddress' \
-                      --filters "Name=tag:project,Values=udapeople-backend" \
+                      --filters "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
                       --output text)
             echo ${BACKEND_IP}
             curl "http://${BACKEND_IP}:3030/api/status"
