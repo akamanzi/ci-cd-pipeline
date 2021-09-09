@@ -283,6 +283,7 @@ jobs:
             
       - run:
           name: build the backend
+          no_output_timeout: 20m
           command: |
             echo NODE_ENV=production > backend/.env
             echo VERSION=1 >> backend/.env
