@@ -158,6 +158,7 @@ jobs:
             # copy ip to memstash
             BACKENDURL=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:project,Values=udapeople-backend" --output text)
             curl -H "Content-Type: text/plain" -H "token: 1bfc2326-0985-4863-a650-48e3dcdff48e" --request PUT --data "$BACKENDURL" https://api.memstash.io/values/backendurl
+            echo ${BACKENDURL}
             # install utilities
             yum -y install tar # install tar utility
             yum -y install gzip # install gzip utility
@@ -322,7 +323,11 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            BACKEND_IP=$(curl -H "token: 1bfc2326-0985-4863-a650-48e3dcdff48e" --request GET https://api.memstash.io/values/backendurl)
+            BACKEND_IP=$(aws ec2 describe-instances \
+                      --query 'Reservations[*].Instances[*].PublicIpAddress' \
+                      --filters "Name=tag:project,Values=udapeople-backend" \
+                      --output text)
+            echo ${BACKEND_IP}
             curl "http://${BACKEND_IP}:3030/api/status"
       - run:
           name: Frontend smoke test.
