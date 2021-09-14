@@ -1,0 +1,6 @@
+URL01: https://github.com/akamanzi/ci-cd-pipeline/tree/master
+URL02: http://udapeople-b430692.s3-website-us-east-1.amazonaws.com
+URL03: https://dabl7bic099ny.cloudfront.net
+URL04: http://ec2-3-86-58-239.compute-1.amazonaws.com:3030/api/status
+URL05: http://ec2-54-205-145-242.compute-1.amazonaws.com:9090
+
